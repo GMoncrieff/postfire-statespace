@@ -4,8 +4,8 @@ data {
   int<lower=0> J; // n pixels
   //int<lower=1,upper=J> pid[N];
   vector<lower = 0, upper = 1> [N] y; // obs
-  vector[J] envg1; //env covariate 1
-  vector[J] envg2; //env covariate 2
+//  vector[J] envg1; //env covariate 1
+//  vector[J] envg2; //env covariate 2
   
   vector[J] z0; // Initial state value
   
@@ -17,10 +17,12 @@ parameters {
   vector<lower = 0, upper = 1> [J] gamma;
   vector<lower = 0> [J] lambda;
   real alpha_mu;
-  real gamma_b1;
-  real gamma_b2;
-  real lambda_b1;
-  real lambda_b2;
+  real gamma_mu;
+  real lambda_mu;
+//  real gamma_b1;
+//  real gamma_b2;
+//  real lambda_b1;
+//  real lambda_b2;
   real<lower=0> tau_sq;
   real<lower=0> gamma_tau_sq;
   real<lower=0> lambda_tau_sq;
@@ -33,17 +35,17 @@ parameters {
 }
 
 transformed parameters {
-  vector[J] gamma_mu;
-  vector[J] lambda_mu;
+//  vector[J] gamma_mu;
+//  vector[J] lambda_mu;
   real tau = sqrt(tau_sq);
   real gamma_tau = sqrt(gamma_tau_sq);
   real lambda_tau = sqrt(lambda_tau_sq);
   real alpha_tau = sqrt(alpha_tau_sq);
   
-  for (j in 1:J){
-    gamma_mu[j] = (envg1[j]*gamma_b1) + (envg2[j]*gamma_b2);
-    lambda_mu[j] = (envg1[j]*lambda_b1) + (envg2[j]*lambda_b2);
-  }
+//  for (j in 1:J){
+//    gamma_mu[j] = (envg1[j]*gamma_b1) + (envg2[j]*gamma_b2);
+//    lambda_mu[j] = (envg1[j]*lambda_b1) + (envg2[j]*lambda_b2);
+//  }
 }
 
 model {
@@ -65,10 +67,12 @@ model {
   
   //env regression global effect
   alpha_mu ~ normal(0.15,3);
-  gamma_b1 ~ normal(0,3);
-  gamma_b2 ~ normal(0,3);
-  lambda_b1 ~ normal(0,3);
-  lambda_b2 ~ normal(0,3);
+  lambda_mu ~ normal(0.15,3);
+  gamma_mu ~ normal(0.3,3);
+//  gamma_b1 ~ normal(0,3);
+//  gamma_b2 ~ normal(0,3);
+//  lambda_b1 ~ normal(0,3);
+//  lambda_b2 ~ normal(0,3);
   
   //env regression pixels effect
   alpha ~ normal(alpha_mu, alpha_tau);

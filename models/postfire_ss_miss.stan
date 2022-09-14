@@ -3,7 +3,7 @@ data {
   int<lower = 0> N_mis; //n missing observations
   int<lower = 1, upper = N_obs + N_mis> ii_obs[N_obs]; //indexes of obs
   int<lower = 1, upper = N_obs + N_mis> ii_mis[N_mis]; //indexes of missing
-  real y_obs[N_obs]; //ndvi data
+  real<lower = 1, upper = 0> y_obs[N_obs]; //ndvi data
   
   int<lower=0> T; //n time steps per pixel
   int<lower=0> J; // n pixels
@@ -102,8 +102,8 @@ model {
     // Distributions for all other states
     // logistic growth
     // fire swtiches state to alpha
-    for(t in 2:T){
-      z[j,t] ~ normal((z[j,t-1,] * lambda[j] * (1 - (z[j,t-1] / gamma[j]))*(1-fire[j,t-1])+(fire[j,t-1]*alpha[j])),sdp)
+    for(t in 2:TT){
+      z[j,t] ~ normal(((z[j,t-1] + (z[j,t-1] * lambda[j] * (1 - (z[j,t-1] / gamma[j]))))*(1-fire[j,t-1]))+(fire[j,t-1]*alpha[j]),sdp);
     }
     
     // Distributions for the observations
