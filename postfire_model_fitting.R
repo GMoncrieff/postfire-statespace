@@ -13,8 +13,7 @@ set.seed(1234)
 # read raw data -----------------------------------------------------------
 
 #data come from dimensions plots
-pyro_test <- read_csv("pyro_test.csv")
-
+pyro_test <- read_csv("test_data.csv")
 
 # data prep ---------------------------------------------------------------
 
@@ -120,7 +119,7 @@ postfire_data <- list(N = nrow(full_sub),
                       z0=pmin(pmax(rnorm(nrow(firemat),0.4,0.1),0.1),0.8),
                       eg_id = eg_id)
 #compil model
-model <- cmdstan_model('models/postfire_ss_obserr.stan', compile = TRUE)
+model <- cmdstan_model('models/postfire_ss_oerr.stan', compile = TRUE)
 
 #fit model
 fit_mcmc <- model$sample(
@@ -131,7 +130,7 @@ fit_mcmc <- model$sample(
   parallel_chains = 1,
   iter_warmup = 200,
   iter_sampling = 200,
-  max_treedepth = 15
+  max_treedepth = 12
 )
 
 

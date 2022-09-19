@@ -151,9 +151,9 @@ generated quantities {
   
   //generate a sereis of predictions for a pixel
   for (m in 2:M){
-        znew[m] = fmax(normal_rng(((znew[m-1] + (znew[m-1] * lambda[eg_id] * (1 - (znew[m-1] / gamma[eg_id]))))*(1-firenew[m-1])) +
+        znew[m] = fmin(fmax(normal_rng(((znew[m-1] + (znew[m-1] * lambda[eg_id] * (1 - (znew[m-1] / gamma[eg_id]))))*(1-firenew[m-1])) +
         (firenew[m-1]*alpha[eg_id]) + 
-        (phase1[eg_id]*(sin(doy_rad[eg_id,m-1]))+phase2[eg_id]*(cos(doy_rad[eg_id,m-1]))),sdp),0);
+        (phase1[eg_id]*(sin(doy_rad[eg_id,m-1]))+phase2[eg_id]*(cos(doy_rad[eg_id,m-1]))),sdp),0),1);
   
   }
 }
