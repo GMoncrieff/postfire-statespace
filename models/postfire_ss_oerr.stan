@@ -59,7 +59,7 @@ parameters {
   real<lower=0> sdo; // Standard deviation of the observation equation
   
   real<lower = 0, upper = 1> z[J, TT]; // State time series
-//  vector<lower = 0, upper = 1> [N] fire; //fire occurence vector
+  vector<lower = 0, upper = 1> [N] firefit; //fire occurence vector
 }
 
 transformed parameters {
@@ -87,7 +87,7 @@ model {
   sdo ~  normal(0.1, 0.001); //strng prior
   
   //fire measure prior
-  //firefit ~ normal(0, 1);
+  firefit ~ normal(0, 1);
   
   //env regressions error
   gamma_tau ~  exponential(2);
@@ -116,7 +116,7 @@ model {
   int pos;
   
   //fire measuremet error model
-   //fire ~ bernoulli_logit(firefit);    // fire obsmeasurement model
+   fire ~ bernoulli_logit(firefit);    // fire obsmeasurement model
    
   //loop through pixels/groups
    pos = 0;
@@ -133,8 +133,8 @@ model {
     
     for(t in 2:TT){
       z[j,t] ~ normal(((z[j,t-1] + 
-      (z[j,t-1] * lambda[j] * (1 - (z[j,t-1] / gamma[j]))))*(1-fire[pos])) +
-      (fire[pos]*alpha[j]) + 
+      (z[j,t-1] * lambda[j] * (1 - (z[j,t-1] / gamma[j]))))*(1-inv_logit(firefit[pos]))) +
+      (inv_logit(firefit[pos])*alpha[j]) + 
       (phase1[j]*(sin(doy_rad[j,t-1]))+phase2[j]*(cos(doy_rad[j,t-1]))),sdp);
       
       pos = pos + 1;
