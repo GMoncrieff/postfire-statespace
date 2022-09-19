@@ -15,3 +15,5 @@ $z_{i,t}$ is the hidden state for site $i$ at time $t$
  $\lambda, \gamma, \alpha, A$ and $\phi$ are the parmaeters for growth rate, max ndvi, ndvi immediately after fire, seasonal amplitude, and seasonal phase shift respectively
 
 An example time series below shows the median estiatmed state (black line) with 90% CI (dark shaded area) and observations (red points). Forecasted future states are shown in the light gray shaded area
+
+![example ts](test_ts.png)
