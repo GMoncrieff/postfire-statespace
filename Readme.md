@@ -1,9 +1,8 @@
 ## A state-space model of vegetation activity and fire recovery in the Cape Floristic Region
 
 The model uses the folllowing state update equation:
-$$z_{i,t} = (z_{i,t-1} +  z_{i,t-1}\lambda_i(1-\frac{z_{i,t-1}}{\gamma_i})) (1-q_{i,t-1}) + \\q_{i,t-1}\alpha_i + \\
-A_i\sin(x_t+\phi_i) + \\
-\epsilon_{i,t}$$
+
+$$z_{i,t} = (z_{i,t-1} + z_{i,t-1}\lambda_i(1-\frac{z_{i,t-1}}{\gamma_i})) (1-q_{i,t-1}) + q_{i,t-1}\alpha_i +  A_i\sin(x_t+\phi_i) +  \epsilon_{i,t}$$
 $$\epsilon_{i,t} \sim \mathcal{N}(0,\sigma_p^{2})$$
 $$x_{i,t} \sim \mathcal{bernoulli}(q_{i,t})$$
 $$y_{i,t} \sim \mathcal{N}(z_{i,t},\sigma_o^{2})$$
