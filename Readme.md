@@ -16,6 +16,8 @@ $z_{i,t}$ is the hidden state for site $i$ at time $t$
  $A_i\sin(x_t+\phi_i)$ introduces seasonality. 
  $\lambda, \gamma, \alpha, A$ and $\phi$ are the parmaeters for growth rate, max ndvi, ndvi immediately after fire, seasonal amplitude, and seasonal phase shift respectively
 
-An example time series below shows the median estiatmed state (black line) with 90% CI (dark shaded area) and observations (red points). Forecasted future states are shown in the light gray shaded area
+An example time series below shows the median estimated state (black line) with 90% CI (dark shaded area) and observations (red points). Forecasted future states are shown in the light gray shaded area
 
 ![example ts](test_ts.png)
+
+Currently, two .stan modesl are provided. `postfire_ss.stan` implements the model described above, but does not fit measurement error for the fire predictor. `postifre_ss_oerr.stan` fits this measurement error, but currently model fitting is unstable .
