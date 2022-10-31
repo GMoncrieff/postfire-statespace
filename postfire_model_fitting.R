@@ -6,6 +6,7 @@ library(posterior)
 library(bayesplot)
 library(stringr)
 library(ggplot2)
+library(lubridate)
 
 set.seed(1234)
 
@@ -13,39 +14,21 @@ set.seed(1234)
 # read raw data -----------------------------------------------------------
 
 #data come from dimensions plots
-pyro_test <- read_csv("test_data.csv")
+fullts <- read_csv("example_postfire_data.csv")
+
+#id = obs id
+#pid = unique pixel id
+#y = MODIS NDVI
+#map = mean annual precipitation in mm
+#tmin07 = july min temp (deg C)
+#fire = did a fire occur?
+#tid = temporal id (date)
+#doy rad = day of year in radians
 
 # data prep ---------------------------------------------------------------
 
-#selection only those plots that have a full time series
-nogaps<- pyro_test %>% 
-  group_by(id) %>% 
-  summarise(n = n()) %>%
-  dplyr::filter(n==380)
-
-#create a fire flag -when age/DA decreases that means we had a fire
-#create a date variable - I didn't include data in this dataset. but we know that there are 16 days between obs, so we just use this
-#then we convert this date variable to radians
-fullts <- pyro_test %>%
-  dplyr::filter(id %in% nogaps$id) %>% 
-  group_by(id) %>% 
-  mutate(firelag = DA - lag(DA)) %>%
-  mutate(firelead = lead(firelag)) %>%
-  mutate(fire = as.numeric((firelag<0))) %>%
-  ungroup() %>%
-  mutate(ND= pmax(0,ND)) %>%
-  dplyr::select(c(id=...1,pid=id,y=ND,map,tmin07,fire)) %>%
-  group_by(pid) %>%
-  mutate(minid=min(id)) %>%
-  mutate(tid=id-minid+1) %>%
-  mutate(y = replace(y, y==0, NA)) %>%
-  mutate(fire = replace_na(fire, 0)) %>%
-  dplyr::select(-minid) %>%
-  ungroup() %>%
-  dplyr::mutate(doy_rad=(((((tid-1)*16)+1)%%365.25)/365.25)*2*pi)
-
 #subsample dataset to 20 pixels
-pix <- unique(fullts$pid) %>% sample(20)
+pix <- unique(fullts$pid) %>% sample(40)
 full_sub  <- fullts %>%
   dplyr::filter(pid %in% pix) %>%
   mutate(rid = row_number()) %>%
@@ -119,7 +102,7 @@ postfire_data <- list(N = nrow(full_sub),
                       z0=pmin(pmax(rnorm(nrow(firemat),0.4,0.1),0.1),0.8),
                       eg_id = eg_id)
 #compil model
-model <- cmdstan_model('models/postfire_ss_oerr.stan', compile = TRUE)
+model <- cmdstan_model('models/postfire_ss.stan', compile = TRUE)
 
 #fit model
 fit_mcmc <- model$sample(
@@ -129,8 +112,7 @@ fit_mcmc <- model$sample(
   chains = 1,
   parallel_chains = 1,
   iter_warmup = 200,
-  iter_sampling = 200,
-  max_treedepth = 12
+  iter_sampling = 500
 )
 
 
@@ -168,12 +150,29 @@ zdat <- rbind(zfit,zsim)
 #observations
 obsplot <- data.frame(y=t(obsmat[eg_id,2:ncol(obsmat)]),time=seq(1:(ncol(obsmat)-1)))
 
+#dates of fires
+fireplot <- data.frame(y=t(firemat[eg_id,2:ncol(firemat)]),time=seq(1:(ncol(firemat)-1)))
+ffire <- nrow(fireplot)+which(firenew==1)
+fireplot <- fireplot %>% filter(y==1)
+fireplot <- rbind(fireplot,c(1,ffire))
+
+#dates for labels
+dates = dmy("1/1/2000") + days((zdat$time*16)-16)
+dateslab = dmy("1/1/2000") + days((c(1, 100,200,300,400)*16)-16)
+
 #plot!
 ggplot() + 
   geom_ribbon(data=zdat,aes(ymin = q5, ymax = q95,x=time), fill = "grey70") +
   geom_line(data=zdat,aes(y = median,x=time)) +
+  geom_vline(data= fireplot, aes(xintercept = time),lty=2,alpha=0.5) +
   geom_point(data=obsplot,aes(y=y,x=time),col='red',alpha=0.2) +
-  annotate("rect", xmin = 380, xmax = 419, ymin = 0, ymax = 1,
+  annotate("rect", xmin = 380, xmax = 440, ymin = 0, ymax = 0.5,
            alpha = .2, fill = "grey") +
   theme_bw() +
-  labs(x='time step',y='ndvi')
+  ylim(0,0.5) +
+  scale_x_continuous(breaks = c(1,100,200,300,400), labels = dateslab) +
+  labs(x='date',y='NDVI')
+
+ggsave('example_ts.png',scale=0.6)
+
+

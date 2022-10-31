@@ -4,3 +4,7 @@
 .Ruserdata
 renv/
 .Rprofile
+.DS_Store
+*.RData
+models/postfire_ss
+models/postfire_ss_oerr
