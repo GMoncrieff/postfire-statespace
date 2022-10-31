@@ -173,6 +173,6 @@ ggplot() +
   scale_x_continuous(breaks = c(1,100,200,300,400), labels = dateslab) +
   labs(x='date',y='NDVI')
 
-ggsave('example_ts.png',scale=0.6)
+ggsave('example_ts.png',scale=0.6, width=10, height=6)
 
 
