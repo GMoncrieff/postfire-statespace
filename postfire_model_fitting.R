@@ -109,10 +109,10 @@ fit_mcmc <- model$sample(
   data = postfire_data,
   seed = 12345,
   refresh=50,
-  chains = 1,
-  parallel_chains = 1,
-  iter_warmup = 200,
-  iter_sampling = 500
+  chains = 3,
+  parallel_chains = 3,
+  iter_warmup = 1000,
+  iter_sampling = 1000
 )
 
 
