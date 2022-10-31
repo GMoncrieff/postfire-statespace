@@ -17,7 +17,7 @@ $x_{i,t}$ is the hidden state for site $i$ at time $t$
  
  $v_{i,t}$ is the day of year in radians
  
- $A_i\sin(x_t+\phi_i)$ introduces seasonality.   
+ $A_i\sin(v_t+\phi_i)$ introduces seasonality.   
  
   $y_{i,t}$ is the observed NDVI
   
